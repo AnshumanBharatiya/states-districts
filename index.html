@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1' />
+	<title>India State Districts lookup</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<style type="text/css">
+		body{
+			background: rgba(0, 0, 0,0.5);
+		}
+		p,span{
+			letter-spacing: 1px;
+			word-spacing: 1px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<h3 class="text-center mb-3 text-danger">
+					<i class="fa fa-flag-checkered"></i> India State Districts Lookup
+				</h3>
+				<h5 class="text-center mb-3">Type State name <br><small> See all the districts under that state</small></h5>
+				<div class="form-group">
+					<input type="text" name="search" id="search" class="form-control form-control-lg" placeholder="Enter State name..." autocomplete="off">
+				</div>
+				<div id="match_list"></div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		const search = document.getElementById('search');
+		const matchlist = document.getElementById('match_list');
+
+		// search us,json and filter it
+		const searchStates = async searchText => {
+			const res = await fetch('india2.json');
+			const states = await res.json();
+
+			// console.log(states);
+			//get match to current text input
+			let matches = states.filter(state => 
+			{
+				const regex = new RegExp(`^${searchText}`,'gi');
+				return state.st.match(regex);
+			});
+			if(searchText.length === 0)
+			{
+				matches = [];
+				matchlist.innerHTML = '';
+			}
+
+			outputHtml(matches);
+			// console.log(matches);
+		};
+
+		//show results in html
+		const outputHtml = matches => {
+			if(matches.length >0 )
+			{
+				const html = matches.map(match => `
+					<div class="card card-body mb-3">
+						<p class="text-primary">${match.st}:<br><span class="text-white">Districts Names:(${match.districts})</span></p>
+					</div>
+				`).join('');
+				// console.log(html);
+				matchlist.innerHTML = html;
+			}
+		};
+		search.addEventListener('input', () => searchStates(search.value));
+	</script>
+</body>
+</html>
